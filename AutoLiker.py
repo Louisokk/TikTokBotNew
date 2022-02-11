@@ -24,7 +24,8 @@ PATH = "chromedriver.exe"
 driver = webdriver.Chrome(ChromeDriverManager().install())
 driver.get("http://www.zefoy.com")
 
-whatsapp = webdriver.Chrome(ChromeDriverManager().install())
+driver2 = webdriver.Chrome(ChromeDriverManager().install())
+driver2.get("http://www.freer.es")
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #                                                                                           TikTok Bot                                                                                      |
@@ -35,7 +36,7 @@ def loop5(vidUrl, amount, botnumb, name, idx, failureRate = 0):  # comment likes
     canvas.itemconfig(status, text="Running")
     canvas.itemconfig(status, fill="#F3F330")
     print(len(taskList))
-    sleep(20)
+    sleep(3)
     # sendWhatsappImage()
 
     try:
@@ -90,8 +91,13 @@ def loop5(vidUrl, amount, botnumb, name, idx, failureRate = 0):  # comment likes
             elif(idx==6):
                 queue.itemconfig(e6_percent, text=percentValue+"%")
             failureRate = 0   
-            sleep(60)
-            loop5(vidUrl, amount, botnumb, name, idx, failureRate)
+            sleep(10)
+            if(freer(vidUrl, name) == True):
+                loop5(vidUrl, amount, botnumb, name, idx, failureRate)
+            else: 
+                driver2.refresh()
+                sleep(55)
+                loop5(vidUrl, amount, botnumb, name, idx, failureRate)
         else:
             if(idx==1):  
                 queue.itemconfig(e1_percent, text="100%")
@@ -127,6 +133,30 @@ def loop5(vidUrl, amount, botnumb, name, idx, failureRate = 0):  # comment likes
         driver.refresh()
         sleep(5)
         loop5(vidUrl, amount, botnumb, name, idx, failureRate)
+
+
+
+def freer(video, name):
+    sleep(3)
+    try:
+        driver2.find_element_by_xpath("/html/body/main/div/div/div[2]/div/div[1]/div[3]/div/div/button").click()
+        sleep(12)
+        driver2.find_element_by_xpath("/html/body/main/div/div/div[2]/form/div/input").send_keys(video)
+        sleep(2)
+        driver2.find_element_by_xpath("/html/body/main/div/div/div[2]/form/div/div/button").click()
+        sleep(14)
+        driver2.find_element_by_xpath("/html/body/main/div/div/div[2]/div/div/div[1]/h5/button[3]").click()
+        sleep(4)
+        driver2.find_element_by_xpath("/html/body/div[7]/div/div/div[2]/div/div[2]/button").click()
+        sleep(12)
+        driver2.find_element_by_xpath("//*[contains(text(), '%s')]/../../following-sibling::div/button" % (name)).click()
+        sleep(5)
+        driver2.refresh()
+        return True
+    except:
+        print("Something went wrong in freer..Continue with zefoy")
+        driver2.refresh()
+        return False
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #                                                                                           Initial Code                                                                                    |
@@ -172,11 +202,9 @@ def toggleWhatsapp():
     if(whatsappNotify == False):
         button_10.configure(image=button_image_5_activated)
         whatsappNotify = True
-        whatsapp.get("https://web.whatsapp.com/")
     else:
         button_10.configure(image=button_image_5)
         whatsappNotify = False
-        whatsapp.quit() 
 
 def setLikes():
     global likesArg
@@ -386,7 +414,7 @@ button_3 = Button(
     image=button_image_3,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: [settedThread.join(), canvas.itemconfig(status, text="Inactive"), canvas.itemconfig(status, fill="#AF2626")],
+    command=lambda: [settedThread.join()],
     relief="flat"
 )
 button_3.place(
